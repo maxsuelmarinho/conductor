@@ -37,9 +37,7 @@ import com.netflix.conductor.core.execution.mapper.TaskMapper;
 import com.netflix.conductor.core.execution.mapper.TaskMapperContext;
 import com.netflix.conductor.core.utils.ExternalPayloadStorageUtils;
 import com.netflix.conductor.core.utils.IDGenerator;
-import com.netflix.conductor.core.utils.QueueUtils;
 import com.netflix.conductor.dao.MetadataDAO;
-import com.netflix.conductor.dao.QueueDAO;
 import com.netflix.conductor.metrics.Monitors;
 import java.util.Collections;
 import java.util.HashMap;
@@ -68,7 +66,6 @@ public class DeciderService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeciderService.class);
 
-    private final QueueDAO queueDAO;
     private final ParametersUtils parametersUtils;
     private final ExternalPayloadStorageUtils externalPayloadStorageUtils;
     private final MetadataDAO metadataDAO;
@@ -78,10 +75,9 @@ public class DeciderService {
     private final Predicate<Task> isNonPendingTask = task -> !task.isRetried() && !task.getStatus().equals(SKIPPED) && !task.isExecuted();
 
     @Inject
-    public DeciderService(ParametersUtils parametersUtils, QueueDAO queueDAO, MetadataDAO metadataDAO,
+    public DeciderService(ParametersUtils parametersUtils, MetadataDAO metadataDAO,
                           ExternalPayloadStorageUtils externalPayloadStorageUtils,
                           @Named("TaskMappers") Map<String, TaskMapper> taskMappers) {
-        this.queueDAO = queueDAO;
         this.metadataDAO = metadataDAO;
         this.parametersUtils = parametersUtils;
         this.taskMappers = taskMappers;
@@ -528,19 +524,15 @@ public class DeciderService {
             return false;
         }
 
-        if (queueDAO.exists(QueueUtils.getQueueName(task), task.getTaskId())) {
-            // this task is present in the queue
-            // this means that it has been updated with callbackAfterSeconds and is not being executed in a worker
-            return false;
-        }
-
         LOGGER.debug("Evaluating responseTimeOut for Task: {}, with Task Definition: {}", task, taskDefinition);
 
         long responseTimeout = 1000L * taskDefinition.getResponseTimeoutSeconds();
+        long callbackTime = 1000L * task.getCallbackAfterSeconds();
+        long adjustedResponseTimeout = responseTimeout + callbackTime;
         long now = System.currentTimeMillis();
         long noResponseTime = now - task.getUpdateTime();
 
-        if (noResponseTime < responseTimeout) {
+        if (noResponseTime < adjustedResponseTimeout) {
             LOGGER.debug("Current responseTime: {} has not exceeded the configured responseTimeout of {} " +
                     "for the Task: {} with Task Definition: {}", noResponseTime, responseTimeout, task, taskDefinition);
             return false;
