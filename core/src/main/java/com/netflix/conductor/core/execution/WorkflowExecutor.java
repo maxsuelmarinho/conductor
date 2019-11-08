@@ -1036,7 +1036,7 @@ public class WorkflowExecutor {
      */
     public void pauseWorkflow(String workflowId) {
         try {
-            executionLockService.acquireLock(workflowId);
+            executionLockService.acquireLock(workflowId, 60000);
             WorkflowStatus status = WorkflowStatus.PAUSED;
             Workflow workflow = executionDAOFacade.getWorkflowById(workflowId, false);
             if (workflow.getStatus().isTerminal()) {
@@ -1058,7 +1058,6 @@ public class WorkflowExecutor {
      */
     public void resumeWorkflow(String workflowId) {
         try {
-            executionLockService.acquireLock(workflowId);
             Workflow workflow = executionDAOFacade.getWorkflowById(workflowId, false);
             if (!workflow.getStatus().equals(WorkflowStatus.PAUSED)) {
                 throw new IllegalStateException("The workflow " + workflowId + " is not PAUSED so cannot resume. " +

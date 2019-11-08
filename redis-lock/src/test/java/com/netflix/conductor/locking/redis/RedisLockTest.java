@@ -107,47 +107,22 @@ public class RedisLockTest {
     }
 
     // TODO
-    @Ignore
-    @Test
-    public void testReleaseLockThread() throws InterruptedException {
-        redisson.getKeys().flushall();
-        String lockId = "abcd-1234";
-
-        Worker worker1 = new Worker(redisLock, lockId);
-
-        worker1.start();
-        worker1.join();
-
-        assertTrue(worker1.isLocked);
-//        worker1.releaseLock();
-
-        RLock lock = redisson.getLock(lockId);
-        assertFalse(lock.isLocked());
-    }
-
-    // TODO
-    @Ignore
     @Test
     public void testLockReleaseAndAcquire() throws InterruptedException {
         redisson.getKeys().flushall();
         String lockId = "abcd-1234";
 
+        boolean isLocked = redisLock.acquireLock(lockId, 1000, 10000, TimeUnit.MILLISECONDS);
+        assertTrue(isLocked);
+
+        redisLock.releaseLock(lockId);
+
         Worker worker1 = new Worker(redisLock, lockId);
-        Worker worker2 = new Worker(redisLock, lockId);
 
         worker1.start();
         worker1.join();
 
         assertTrue(worker1.isLocked);
-//        worker1.releaseLock();
-
-        worker2.start();
-        worker2.join();
-        assertTrue(worker2.isLocked);
-
-//        worker2.releaseLock();
-        RLock lock = redisson.getLock(lockId);
-        assertFalse(lock.isLocked());
     }
 
     @Test
