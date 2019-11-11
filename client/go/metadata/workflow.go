@@ -26,26 +26,26 @@ type WorkflowTask struct {
 	Description                    string                    `json:"description"`
 	InputParameters                map[string]interface{}    `json:"inputParameters"`
 	Type                           TaskType                  `json:"type"`
-	DynamicTaskNameParam           string                    `json:"dynamicTaskNameParam"`
-	CaseValueParam                 string                    `json:"caseValueParam"`
-	CaseExpression                 string                    `json:"caseExpression"`
-	ScriptExpression               string                    `json:"scriptExpression"`
+	DynamicTaskNameParam           *string                   `json:"dynamicTaskNameParam"`
+	CaseValueParam                 *string                   `json:"caseValueParam"`
+	CaseExpression                 *string                   `json:"caseExpression"`
+	ScriptExpression               *string                   `json:"scriptExpression"`
 	DecisionCases                  map[string][]WorkflowTask `json:"decisionCases"`
-	DynamicForkJoinTasksParam      string                    `json:"dynamicForkJoinTasksParam"`
-	DynamicForkTasksParam          string                    `json:"dynamicForkTasksParam"`
-	DynamicForkTasksInputParamName string                    `json:"dynamicForkTasksInputParamName"`
+	DynamicForkJoinTasksParam      *string                   `json:"dynamicForkJoinTasksParam"`
+	DynamicForkTasksParam          *string                   `json:"dynamicForkTasksParam"`
+	DynamicForkTasksInputParamName *string                   `json:"dynamicForkTasksInputParamName"`
 	DefaultCase                    []WorkflowTask            `json:"defaultCase"`
 	ForkTasks                      [][]WorkflowTask          `json:"forkTasks"`
 	StartDelay                     int                       `json:"startDelay" validate:"gte=0"`
-	SubWorkflowParam               SubWorkflowParams         `json:"subWorkflowParam"`
+	SubWorkflowParam               *SubWorkflowParams        `json:"subWorkflowParam"`
 	JoinOn                         []string                  `json:"joinOn"`
-	Sink                           string                    `json:"sink"`
+	Sink                           *string                   `json:"sink"`
 	Optional                       bool                      `json:"optional"`
-	TaskDefinition                 TaskDef                   `json:"taskDefinition"`
+	TaskDefinition                 *TaskDef                  `json:"taskDefinition"`
 	RateLimited                    bool                      `json:"rateLimited"`
 	DefaultExclusiveJoinTask       []string                  `json:"defaultExclusiveJoinTask"`
 	AsyncComplete                  bool                      `json:"asyncComplete"`
-	LoopCondition                  string                    `json:"loopCondition"`
+	LoopCondition                  *string                   `json:"loopCondition"`
 	LoopOver                       []WorkflowTask            `json:"loopOver"`
 }
 
