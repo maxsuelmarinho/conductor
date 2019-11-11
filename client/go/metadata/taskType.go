@@ -1,17 +1,5 @@
 package metadata
 
-import (
-	"bytes"
-	"encoding/json"
-)
-
-type Enum interface {
-	Name() string
-	Ordinal() int
-	MarshalJSON() ([]byte, error)
-	UnmarshalJSON(b []byte) error
-}
-
 // TaskType constants representing each of the possible enumeration values.
 type TaskType int
 
@@ -35,7 +23,7 @@ const (
 	KafkaPublish
 )
 
-var taskTypeNames = [...]string{
+var taskTypeNames = []string{
 	"SIMPLE",
 	"DYNAMIC",
 	"FORK_JOIN",
@@ -75,13 +63,7 @@ var taskTypeNameToEnum = map[string]TaskType{
 
 // Name returns the string representation of the enum
 func (t TaskType) Name() string {
-	ordinal := t.Ordinal()
-	length := len(taskTypeNames)
-	if ordinal < 1 || ordinal > length {
-		return "Unknown"
-	}
-
-	return taskTypeNames[ordinal-1]
+	return toString(&t, taskTypeNames)
 }
 
 // Ordinal returns the ordinal representation of the enum
@@ -91,19 +73,16 @@ func (t TaskType) Ordinal() int {
 
 // MarshalJSON marshals the enum as a quoted json string
 func (t TaskType) MarshalJSON() ([]byte, error) {
-	buffer := bytes.NewBufferString(`"`)
-	buffer.WriteString(t.Name())
-	buffer.WriteString(`"`)
-	return buffer.Bytes(), nil
+	return marshalJSON(&t)
 }
 
 // UnmarshalJSON unmashals a quoted json string to the enum value
 func (t *TaskType) UnmarshalJSON(b []byte) error {
-	var taskName string
-	if err := json.Unmarshal(b, &taskName); err != nil {
+	enumName, err := unmarshalJSON(b)
+	if err != nil {
 		return err
 	}
 
-	*t = taskTypeNameToEnum[taskName]
+	*t = taskTypeNameToEnum[enumName]
 	return nil
 }
