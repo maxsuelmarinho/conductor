@@ -10,7 +10,7 @@ const (
 
 var timeoutPolicyNames = []string{
 	"RETRY",
-	"TIMEOUT_WF",
+	"TIME_OUT_WF",
 	"ALERT_ONLY",
 }
 
