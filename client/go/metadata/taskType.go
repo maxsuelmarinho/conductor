@@ -1,9 +1,9 @@
 package metadata
 
-// TaskType constants representing each of the possible enumeration values.
+// TaskType represents each of the possible enumeration values.
 type TaskType int
 
-// Representing each of the possible enumeration values.
+// Constants representing each of the possible enumeration values.
 const (
 	Simple TaskType = iota + 1
 	Dynamic
