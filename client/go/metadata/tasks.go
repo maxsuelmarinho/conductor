@@ -15,9 +15,9 @@ var timeoutPolicyNames = []string{
 }
 
 var timeoutPolicyNameToEnum = map[string]TimeoutPolicy{
-	"RETRY":      Retry,
-	"TIMEOUT_WF": TimeoutWF,
-	"ALERT_ONLY": AlertOnly,
+	"RETRY":       Retry,
+	"TIME_OUT_WF": TimeoutWF,
+	"ALERT_ONLY":  AlertOnly,
 }
 
 // Name returns the string representation of the enum
